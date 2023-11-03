@@ -55,7 +55,7 @@ class SfrpgGlobalattackMenu extends FormApplication {
         let bonuses = [];
 
         for (let index = 0; index < formData.name.length; index++) {
-            let mod = {'bonus': {'name': formData.name[index], 'modifier': formData.modifier[index], 'notes': formData.notes[index], 'enabled': false}}
+            let mod = {'bonus': {'name': formData.name[index], 'modifier': formData.modifier[index], 'notes': formData.notes[index], 'enabled': false, 'modifierType': 'formula'}}
             bonuses.push(mod);
         }
 
@@ -75,7 +75,7 @@ class SfrpgGlobalattackMenu extends FormApplication {
 
         switch (action) {
             case 'create': {
-                let newBonus = {'bonus': {'name': 'Name', 'modifier': 'Mod', 'notes': 'Notes', 'enabled': false}}
+                let newBonus = {'bonus': {'name': 'Name', 'modifier': 'Mod', 'notes': 'Notes', 'enabled': false, 'modifierType': 'formula'}}
                 let bonuses = CONFIG.SFRPG.globalAttackRollModifiers;
                 bonuses.push(newBonus);
                 game.settings.set(SfrpgGlobalattack.ID, 'bonuses', CONFIG.SFRPG.globalAttackRollModifiers)
