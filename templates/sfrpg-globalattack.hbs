@@ -4,13 +4,23 @@
         <tr>
             <th>Name</th>
             <th>Modifier</th>
+            <th>Type</th>
             <th>Notes</th>
             <th>Delete</th>
         </tr>
-        {{#each this}} 
-        <tr data-modifier-index="{{@key}}">
+        {{#each modifiers}} 
+        <tr data-modifier-index="{{@key}}" class="draggable-item">
             <td  class="sfga-name" style="width: 30%;"><input type="text" name="name" value="{{bonus.name}}"></td>
             <td  class="sfga-mod" style="width: 5%;"><input type="text" name="modifier" value="{{bonus.modifier}}"></td>
+            <td class="sfga-type">
+                <select name="type">
+                    {{#each ../types}}
+                        <option value="{{@key}}"  {{#if (eq @key ../bonus.type)}}selected{{/if}}>
+                            {{this}}
+                        </option>
+                    {{/each}}
+                </select>
+            </td>
             <td class="sfga-note"><input type="text" name="notes" value="{{bonus.notes}}"></td>
             <td  class="sfga-delete" style="width: 5%;"><button type="button" title="delete" data-action="delete">
                 <i class="fas fa-trash"></i>

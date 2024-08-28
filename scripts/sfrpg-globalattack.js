@@ -26,6 +26,10 @@ Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
     registerPackageDebugFlag(SfrpgGlobalattack.ID);
 }); 
 
+Handlebars.registerHelper('eq', function (a, b) {
+    return a === b;
+});
+
 class SfrpgGlobalattackMenu extends FormApplication {
     static get defaultOptions() {
         const defaults = super.defaultOptions;
@@ -48,14 +52,25 @@ class SfrpgGlobalattackMenu extends FormApplication {
     }
 
     getData(options) {
-        return CONFIG.SFRPG.globalAttackRollModifiers;
+        return { 
+            modifiers: CONFIG.SFRPG.globalAttackRollModifiers,
+            types: CONFIG.SFRPG.modifierTypes
+        }
     }
 
     _updateObject(event, formData) {
         let bonuses = [];
 
         for (let index = 0; index < formData.name.length; index++) {
-            let mod = {'bonus': {'name': formData.name[index], 'modifier': formData.modifier[index], 'notes': formData.notes[index], 'enabled': false, 'modifierType': 'formula'}}
+            let mod = {
+                'bonus': {
+                    'name': formData.name[index], 
+                    'modifier': formData.modifier[index], 
+                    'notes': formData.notes[index], 
+                    'type': formData.type[index], 
+                    'subtab': 'temporary', 
+                    'enabled': false, 
+                    'modifierType': 'formula'}}
             bonuses.push(mod);
         }
 
@@ -75,7 +90,7 @@ class SfrpgGlobalattackMenu extends FormApplication {
 
         switch (action) {
             case 'create': {
-                let newBonus = {'bonus': {'name': 'Name', 'modifier': 'Mod', 'notes': 'Notes', 'enabled': false, 'modifierType': 'formula'}}
+                let newBonus = {'bonus': {'name': 'Name', 'modifier': 'Mod', 'notes': 'Notes', 'type': 'untyped', 'enabled': false, 'modifierType': 'formula'}}
                 let bonuses = CONFIG.SFRPG.globalAttackRollModifiers;
                 bonuses.push(newBonus);
                 game.settings.set(SfrpgGlobalattack.ID, 'bonuses', CONFIG.SFRPG.globalAttackRollModifiers)
