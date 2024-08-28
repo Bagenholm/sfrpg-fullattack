@@ -82,7 +82,60 @@ class SfrpgGlobalattackMenu extends FormApplication {
     activateListeners(html) {
         super.activateListeners(html);
         html.on('click', "[data-action]", this._handleButtonClick.bind(this));
+
+        const dragDrop = new DragDrop({
+            dragSelector: '.draggable-item',
+            dropSelector: '.draggable-item',
+            permissions: {
+                dragstart: this._canDragStart.bind(this), drop: this._canDragDrop.bind(this)
+            },
+            callbacks: {
+                dragstart: this._onDragStart.bind(this),
+                dragover: this._onDragOver.bind(this),
+                drop: this._onDrop.bind(this),
+                dragend: this._onDragEnd.bind(this)
+            }
+        });
+
+        dragDrop.bind(html[0]);
     }
+
+    _onDragStart(event) {
+        // Store the index of the dragged item
+        SfrpgGlobalattack.log(false, 'drag start', event);
+        const index = $(event.currentTarget).data('modifierIndex');
+        event.dataTransfer.setData('text/plain', index);
+        event.currentTarget.classList.add('dragging');
+    }
+
+    _onDragOver(event) {
+        event.preventDefault(); // Allow dropping
+        event.dataTransfer.dropEffect = 'move';
+    }
+
+    _onDrop(event) {
+        event.preventDefault();
+        const fromIndex = event.dataTransfer.getData('text/plain');
+        const toIndex = $(event.currentTarget).data('modifierIndex');
+
+        // Swap items in the array
+        let bonuses = CONFIG.SFRPG.globalAttackRollModifiers;
+        const [movedBonus] = bonuses.splice(fromIndex, 1);
+        bonuses.splice(toIndex, 0, movedBonus);
+
+        // Update the bonuses in settings
+        CONFIG.SFRPG.globalAttackRollModifiers = bonuses;
+        game.settings.set(SfrpgGlobalattack.ID, 'bonuses', CONFIG.SFRPG.globalAttackRollModifiers);
+
+        // Re-render the form
+        this.render();
+        event.currentTarget.classList.remove('dragging');
+    }
+
+    _onDragEnd(event) {
+        event.currentTarget.classList.remove('dragging');
+    }
+
 
     async _handleButtonClick(event) {
         const clickedElement = $(event.currentTarget);
